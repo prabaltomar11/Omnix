@@ -1,28 +1,23 @@
-from commands.app_commands import close_app, open_app
+from core.router import route
+from voice.listener import listen
 from utils import logger
 from utils.parser import extract_command
+from utils.history import add_history
 
 
 def main():
     logger.info("Welcome to Omnix")
 
+    while user_input := listen():
+        if user_input.lower().strip() in ["exit", "quit", "bye"]:
+            logger.info("Exiting Omnix. Goodbye!")
+            break
 
+        add_history(user_input)
 
-    user_input = input("What can I do for you? ")
+        action, app_name, website_name = extract_command(user_input)
 
-    action, app_name = extract_command(user_input)
-
-    if action is None:
-        logger.error("Invalid command.")
-        return
-
-
-
-    if action == "open":
-        open_app(app_name)
-    elif action == "close":
-        close_app(app_name)
-
+        route(action, app_name, website_name)
 
 
 if __name__ == "__main__":
