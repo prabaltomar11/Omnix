@@ -4,6 +4,9 @@ from utils import logger
 from utils.parser import extract_command
 import utils.history
 from voice.listener import listen
+from core.dispatcher import dispatch
+from ai.client import ask_ai
+from ai.user_profile import profile_exists, set_profile, save_profile, load_profile, update_profile
 
 
 def choose_input_mode():
@@ -20,6 +23,15 @@ def choose_input_mode():
                 logger.error("Invalid input mode. Please choose 'text' or 'voice'.")
 
 def main():
+
+    if profile_exists():
+        load_profile()
+
+    else:
+        set_profile()
+        save_profile()
+
+
     logger.info(" Hello Sir.\nWelcome to Omnix")
     mode = choose_input_mode()
 
@@ -30,11 +42,20 @@ def main():
             logger.error("No input received. Please try again.")
             continue
 
-         if user_input.lower().strip() in ["exit", "quit", "bye"]:
+         if user_input.lower().strip() in ["exit", "quit", "bye", "stop"]:
             logger.success("Exiting Omnix. Goodbye Sir!")
             break
 
-       
+         destination = dispatch(user_input)
+         logger.info(f"Command routing to: {destination}")
+         
+         if destination == "ai":
+             answer = ask_ai(user_input)
+             print(answer)
+
+         elif destination == "profile":
+             update_profile()
+                  
          utils.history.add_history(user_input)
 
          action, app_name, website_name = extract_command(user_input)
