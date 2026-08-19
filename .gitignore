@@ -14,3 +14,9 @@ venv/
 
 # Omnix user profile
 profile.json
+
+# Generated TTS test audio
+test*.wav
+
+# Piper TTS model binaries
+tts/models/**/*.onnx
